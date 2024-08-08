@@ -141,14 +141,11 @@ public class ReactPicker extends FabricEnabledPicker {
     }
   }
 
-  private final Runnable measureAndLayout = new Runnable() {
-    @Override
-    public void run() {
-      measure(
-          MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
-      layout(getLeft(), getTop(), getRight(), getBottom());
-    }
+  private final Runnable measureAndLayout = () -> {
+    measure(
+        MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+    layout(getLeft(), getTop(), getRight(), getBottom());
   };
 
   @Override
@@ -219,9 +216,11 @@ public class ReactPicker extends FabricEnabledPicker {
     }
 
     if (elementSize != mOldElementSize) {
-      UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
-      if (uiManager != null) {
-        uiManager.setViewLocalData(getId(), new ReactPickerLocalData(elementSize));
+      if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+        UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
+        if (uiManager != null) {
+          uiManager.setViewLocalData(getId(), new ReactPickerLocalData(elementSize));
+        }
       }
       mOldElementSize = elementSize;
       this.setMeasuredHeight(elementSize);
